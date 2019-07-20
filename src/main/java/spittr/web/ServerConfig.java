@@ -5,10 +5,14 @@ import spittr.util.HashUtil;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 @Data
 public class ServerConfig {
-    private int serverHash;
+    public static final int VIRTUAL_NODE_NUM = 8;
+    //虚拟节点，key表示虚拟节点的hash值，value表示虚拟节点的名称
+    private SortedMap<Integer, String> virtualNodes = new TreeMap<Integer, String>();
     private static ServerConfig serverConfig;
 
     private ServerConfig() {}
@@ -21,7 +25,10 @@ public class ServerConfig {
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }
-            serverConfig.setServerHash(HashUtil.getHash(addr.getHostAddress()));
+            for(int i = 0; i < VIRTUAL_NODE_NUM; i++) {
+                String nodeName = String.format("%s&&VN%s", addr.getHostAddress(), String.valueOf(i));
+                serverConfig.getVirtualNodes().put(HashUtil.getHash(nodeName), nodeName);
+            }
         }
         return serverConfig;
     }

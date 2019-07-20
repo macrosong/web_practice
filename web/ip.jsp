@@ -3,5 +3,8 @@
     InetAddress addr = InetAddress.getLocalHost();
     out.println("Local HostAddress:" + addr.getHostAddress());
     ServerConfig serverConfig = ServerConfig.getInstance();
-    out.println("Local Hash:" + serverConfig.getServerHash());
+    out.println("Local Hash:");
+    for(int hash : serverConfig.getVirtualNodes().keySet()) {
+        out.println("Node name: " + serverConfig.getVirtualNodes().get(hash) + " Hash: " + hash);
+    }
 %>
