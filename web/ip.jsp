@@ -1,6 +1,7 @@
-<%@ page import="java.net.InetAddress" %><%
+<%@ page import="java.net.InetAddress" %>
+<%@ page import="spittr.web.ServerConfig" %><%
     InetAddress addr = InetAddress.getLocalHost();
     out.println("Local HostAddress:" + addr.getHostAddress());
-    String hostname = addr.getHostName();
-    out.println("Local host name: " + hostname);
+    ServerConfig serverConfig = ServerConfig.getInstance();
+    out.println("Local Hash:" + serverConfig.getServerHash());
 %>

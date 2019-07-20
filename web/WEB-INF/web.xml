@@ -23,4 +23,7 @@
         <servlet-name>dispatcher</servlet-name>
         <url-pattern>*.form</url-pattern>
     </servlet-mapping>
+    <listener>
+        <listener-class>spittr.web.InitListener</listener-class>
+    </listener>
 </web-app>
