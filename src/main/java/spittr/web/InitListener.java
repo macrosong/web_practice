@@ -8,6 +8,7 @@ public class InitListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         ServerConfig serverConfig = ServerConfig.getInstance();
+//        Jedis jedis = new Jedis(GlobalConstants.REDIS_SRC_DATA_ROLL_KEY);
     }
 
     @Override

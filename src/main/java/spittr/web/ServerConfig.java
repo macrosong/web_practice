@@ -8,9 +8,10 @@ import java.net.UnknownHostException;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import static spittr.cfg.GlobalConstants.VIRTUAL_NODE_NUM;
+
 @Data
 public class ServerConfig {
-    public static final int VIRTUAL_NODE_NUM = 8;
     //虚拟节点，key表示虚拟节点的hash值，value表示虚拟节点的名称
     private SortedMap<Integer, String> virtualNodes = new TreeMap<Integer, String>();
     private static ServerConfig serverConfig;

@@ -1,4 +1,4 @@
-package spittr.web;
+package test;
 
 import java.net.InetAddress;
 
