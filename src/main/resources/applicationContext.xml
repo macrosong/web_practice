@@ -22,4 +22,6 @@
         <constructor-arg name="host" value="${redis.host}" />
         <constructor-arg name="port" value="${redis.port}" type="int" />
     </bean>
+
+    <bean id="mysqlUtil" class="spittr.util.MysqlUtil"/>
 </beans>

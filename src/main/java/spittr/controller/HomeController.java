@@ -23,8 +23,15 @@ public class HomeController {
 
     @RequestMapping(value = "/get", method = RequestMethod.GET)
     public String process(@RequestParam(value = "id") long id, @RequestParam(value = "content") String content) {
-        int hash = HashUtil.getHash(Long.toString(id));
-        jedisPool.getResource().zadd(GlobalConstants.REDIS_SRC_DATA_ROLL_KEY, hash, id + "_" + content);
-        return "id: " + id + " content: " + content + " hash: " + hash;
+        jedisPool.getResource().lpush(GlobalConstants.REDIS_SRC_DATA_KEY, id + "_" + content);
+        return "id: " + id + " content: " + content;
+    }
+
+    @RequestMapping(value = "/autoget", method = RequestMethod.GET)
+    public String autoGet() {
+        String id = Long.toString(jedisPool.getResource().incr("auto_incr"));
+        String content = "test:content:" + id;
+        jedisPool.getResource().lpush(GlobalConstants.REDIS_SRC_DATA_KEY, id + "_" + content);
+        return "id: " + id + " content: " + content;
     }
 }
