@@ -58,10 +58,10 @@ public class MysqlUtil {
             statement.executeUpdate();
             return true;
         } catch (SQLException e) {
-            System.out.println("插入数据库时出错：");
+            System.out.println("插入数据库时出错：" + sql);
             e.printStackTrace();
         } catch (Exception e) {
-            System.out.println("插入时出错：");
+            System.out.println("插入时出错：" + sql);
             e.printStackTrace();
         }
         return false;

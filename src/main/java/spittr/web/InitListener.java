@@ -4,6 +4,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import redis.clients.jedis.JedisPool;
 import spittr.cfg.GlobalConstants;
+import spittr.service.CostumerBaseService;
 import spittr.service.CostumerService;
 import spittr.service.MonitorService;
 import spittr.util.MysqlUtil;
@@ -26,10 +27,18 @@ public class InitListener implements ServletContextListener {
         WebApplicationContext context = WebApplicationContextUtils.getRequiredWebApplicationContext(sce.getServletContext());
         MysqlUtil mysqlUtil = context.getBean(MysqlUtil.class);
         JedisPool jedisPool = context.getBean(JedisPool.class);
-        for(int i = 0; i < GlobalConstants.VIRTUAL_NODE_NUM - 1; i++) {
-            executor.submit(new CostumerService(jedisPool, mysqlUtil));
+        switch (GlobalConstants.SIM_TYPE) {
+            case 1:
+                for (int i = 0; i < GlobalConstants.VIRTUAL_NODE_NUM - 1; i++) {
+                    executor.submit(new CostumerBaseService(jedisPool, mysqlUtil));
+                }
+            case 2:
+                for (int i = 0; i < GlobalConstants.VIRTUAL_NODE_NUM - 1; i++) {
+                    executor.submit(new CostumerService(jedisPool, mysqlUtil));
+                }
+                monitorExecutor.scheduleAtFixedRate(new MonitorService(jedisPool, mysqlUtil), GlobalConstants.MONITOR_PERIOD, GlobalConstants.MONITOR_PERIOD, TimeUnit.SECONDS);
+                break;
         }
-        monitorExecutor.scheduleAtFixedRate(new MonitorService(jedisPool, mysqlUtil), GlobalConstants.MONITOR_PERIOD, GlobalConstants.MONITOR_PERIOD, TimeUnit.SECONDS);
     }
 
     @Override
