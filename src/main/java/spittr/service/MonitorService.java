@@ -1,5 +1,6 @@
 package spittr.service;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import redis.clients.jedis.Jedis;
@@ -53,7 +54,7 @@ public class MonitorService implements Runnable {
     }
 
     private boolean needProcess(String data) {
-        List<String> dataList = Lists.newArrayList();
+        List<String> dataList = Splitter.on("_").splitToList(data);
         ResultSet resultSet = mysqlUtil.selectSQL("select uid, data from data_sim where uid=" + dataList.get(0));
         try {
             if(resultSet != null && resultSet.next()) {
