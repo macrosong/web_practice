@@ -31,7 +31,7 @@ public class MonitorService implements Runnable {
             return;
         }
         // 获取所有的正在处理的list
-        List<String> processingList = jedis.lrange(GlobalConstants.REDIS_SRC_DATA_TIME_KEY, 0, -1);
+        List<String> processingList = jedis.lrange(GlobalConstants.REDIS_SRC_DATA_2_KEY, 0, -1);
         if(processingList == null) return;
         for(String processData : processingList) {
             Double procTime = jedis.zscore(GlobalConstants.REDIS_SRC_DATA_TIME_KEY, processData);
