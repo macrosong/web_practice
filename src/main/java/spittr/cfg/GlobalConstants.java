@@ -10,6 +10,7 @@ public class GlobalConstants {
     public static final String REDIS_MONITOR_TASK_LOCK = "redis_monitor_task_lock";
     public static final int MONITOR_LOCK_TIME = 60;
 
-    public static final int SIM_TYPE = 1;       // 基本队列
+    // public static final int SIM_TYPE = 1;       // 基本队列
     // public static final int SIM_TYPE = 2;    // 安全队列
+    public static final int SIM_TYPE = 3;    // 基于键空间通知
 }
