@@ -1,4 +1,4 @@
-package spittr.service;
+package spittr.service.safequeue;
 
 import com.google.common.base.Splitter;
 import redis.clients.jedis.Jedis;
@@ -9,12 +9,12 @@ import spittr.util.MysqlUtil;
 
 import java.util.List;
 
-public class CostumerWIthSubsService implements Runnable {
+public class CostumerService implements Runnable {
 
     private JedisPool jedisPool;
     private MysqlUtil mysqlUtil;
 
-    public CostumerWIthSubsService(JedisPool jedisPool, MysqlUtil mysqlUtil) {
+    public CostumerService(JedisPool jedisPool, MysqlUtil mysqlUtil) {
         this.jedisPool = jedisPool;
         this.mysqlUtil = mysqlUtil;
     }
@@ -26,9 +26,11 @@ public class CostumerWIthSubsService implements Runnable {
         while(true) {
             String data = jedis.brpoplpush(GlobalConstants.REDIS_SRC_DATA_KEY, GlobalConstants.REDIS_SRC_DATA_2_KEY, GlobalConstants.REDIS_TIMEOUT);
             if(data == null) continue;
+            int now = (int)(System.currentTimeMillis() / 1000);
+            jedis.zadd(GlobalConstants.REDIS_SRC_DATA_TIME_KEY, now, data);
             processData(data);
             Transaction multi = jedis.multi();
-            multi.del(data);
+            multi.zrem(GlobalConstants.REDIS_SRC_DATA_TIME_KEY, data);
             multi.lrem(GlobalConstants.REDIS_SRC_DATA_2_KEY, 1, data);
             multi.exec();
         }

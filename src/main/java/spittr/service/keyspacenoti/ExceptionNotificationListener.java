@@ -1,4 +1,4 @@
-package spittr.service;
+package spittr.service.keyspacenoti;
 
 import com.google.common.base.Splitter;
 import redis.clients.jedis.Jedis;

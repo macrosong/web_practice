@@ -1,4 +1,4 @@
-package spittr.service;
+package spittr.service.hasing;
 
 import com.google.common.base.Splitter;
 import redis.clients.jedis.Jedis;
@@ -9,30 +9,27 @@ import spittr.util.MysqlUtil;
 
 import java.util.List;
 
-public class CostumerService implements Runnable {
-
+public class CostumerHashService implements Runnable {
     private JedisPool jedisPool;
     private MysqlUtil mysqlUtil;
+    private int hashNum;
 
-    public CostumerService(JedisPool jedisPool, MysqlUtil mysqlUtil) {
+    public CostumerHashService(JedisPool jedisPool, MysqlUtil mysqlUtil, int hashNum) {
         this.jedisPool = jedisPool;
         this.mysqlUtil = mysqlUtil;
+        this.hashNum = hashNum;
     }
 
     @Override
     public void run() {
-        System.out.println(Thread.currentThread().getId() + " thread started.");
+        System.out.println(Thread.currentThread().getId() + " hash: " + hashNum + " thread started.");
         Jedis jedis = jedisPool.getResource();
         while(true) {
-            String data = jedis.brpoplpush(GlobalConstants.REDIS_SRC_DATA_KEY, GlobalConstants.REDIS_SRC_DATA_2_KEY, GlobalConstants.REDIS_TIMEOUT);
+            String data = jedis.brpoplpush(GlobalConstants.REDIS_LIST_DATA_PREFIX + hashNum, GlobalConstants.REDIS_LIST_2_DATA_PREFIX + hashNum, GlobalConstants.REDIS_TIMEOUT);
+            System.out.println("<Costumer> hash: " + hashNum + " process data: " + data);
             if(data == null) continue;
-            int now = (int)(System.currentTimeMillis() / 1000);
-            jedis.zadd(GlobalConstants.REDIS_SRC_DATA_TIME_KEY, now, data);
             processData(data);
-            Transaction multi = jedis.multi();
-            multi.zrem(GlobalConstants.REDIS_SRC_DATA_TIME_KEY, data);
-            multi.lrem(GlobalConstants.REDIS_SRC_DATA_2_KEY, 1, data);
-            multi.exec();
+            jedis.lrem(GlobalConstants.REDIS_LIST_2_DATA_PREFIX + hashNum, 1, data);
         }
     }
 

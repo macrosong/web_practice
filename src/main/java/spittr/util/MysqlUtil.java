@@ -54,6 +54,7 @@ public class MysqlUtil {
     // execute insertion language
     public boolean exec(String sql) {
         try {
+            System.out.println(sql);
             statement = conn.prepareStatement(sql);
             statement.executeUpdate();
             return true;

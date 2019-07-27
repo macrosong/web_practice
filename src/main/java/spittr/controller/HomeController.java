@@ -1,5 +1,6 @@
 package spittr.controller;
 
+import jdk.nashorn.internal.objects.Global;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -9,6 +10,7 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.Transaction;
 import spittr.cfg.GlobalConstants;
+import spittr.service.hasing.ServerConfig;
 import spittr.util.HashUtil;
 
 @RestController
@@ -54,6 +56,21 @@ public class HomeController {
             transaction.set(id + "_" + content, "test", "NX", "EX", 5);
             transaction.exec();
             return "id: " + id + " content: " + content;
+        } finally {
+            if(jedis != null) {
+                jedis.close();
+            }
+        }
+    }
+    @RequestMapping(value = "/autogetwithhash", method = RequestMethod.GET)
+    public String autoGetWithHash() {
+        Jedis jedis = jedisPool.getResource();
+        try {
+            String id = Long.toString(jedis.incr("auto_incr"));
+            String content = "test:content:" + id;
+            int hash = ServerConfig.getInstance().getHash(content);
+            jedis.lpush(GlobalConstants.REDIS_LIST_DATA_PREFIX + hash, id + "_" + content);
+            return "<producer> hash: " + hash + " id: " + id + " content: " + id + "_" + content;
         } finally {
             if(jedis != null) {
                 jedis.close();

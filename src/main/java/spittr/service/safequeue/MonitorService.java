@@ -1,4 +1,4 @@
-package spittr.service;
+package spittr.service.safequeue;
 
 import com.google.common.base.Splitter;
 import redis.clients.jedis.Jedis;

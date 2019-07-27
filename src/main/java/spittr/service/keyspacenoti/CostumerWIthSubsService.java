@@ -1,4 +1,4 @@
-package spittr.service;
+package spittr.service.keyspacenoti;
 
 import com.google.common.base.Splitter;
 import redis.clients.jedis.Jedis;
@@ -9,12 +9,12 @@ import spittr.util.MysqlUtil;
 
 import java.util.List;
 
-public class CostumerBaseService implements Runnable {
+public class CostumerWIthSubsService implements Runnable {
 
     private JedisPool jedisPool;
     private MysqlUtil mysqlUtil;
 
-    public CostumerBaseService(JedisPool jedisPool, MysqlUtil mysqlUtil) {
+    public CostumerWIthSubsService(JedisPool jedisPool, MysqlUtil mysqlUtil) {
         this.jedisPool = jedisPool;
         this.mysqlUtil = mysqlUtil;
     }
@@ -24,13 +24,13 @@ public class CostumerBaseService implements Runnable {
         System.out.println(Thread.currentThread().getId() + " thread started.");
         Jedis jedis = jedisPool.getResource();
         while(true) {
-            List<String> data = jedis.brpop(GlobalConstants.REDIS_TIMEOUT, GlobalConstants.REDIS_SRC_DATA_KEY);
-            if(data == null || data.size() == 0) continue;
-            if(data.get(0).equals(GlobalConstants.REDIS_SRC_DATA_KEY)) {
-                processData(data.get(1));
-            } else {
-                processData(data.get(0));
-            }
+            String data = jedis.brpoplpush(GlobalConstants.REDIS_SRC_DATA_KEY, GlobalConstants.REDIS_SRC_DATA_2_KEY, GlobalConstants.REDIS_TIMEOUT);
+            if(data == null) continue;
+            processData(data);
+            Transaction multi = jedis.multi();
+            multi.del(data);
+            multi.lrem(GlobalConstants.REDIS_SRC_DATA_2_KEY, 1, data);
+            multi.exec();
         }
     }
 
