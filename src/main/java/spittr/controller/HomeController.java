@@ -82,4 +82,10 @@ public class HomeController {
     public String hashinfo() {
         return ServerConfig.getInstance().getServerIpHashsMap().toString();
     }
+
+    @RequestMapping(value = "/refresh", method = RequestMethod.GET)
+    public String refresh() {
+        ServerConfig.getInstance().refreshServer();
+        return "success";
+    }
 }

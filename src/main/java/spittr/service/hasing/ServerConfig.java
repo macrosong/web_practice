@@ -93,6 +93,8 @@ public class ServerConfig {
             // 取全部ip地址
             Set<String> servers = jedis.smembers(GlobalConstants.REDIS_SERVER_SET);
             Iterator<String> iterator = servers.iterator();
+            serverConfig.getServerIpHashsMap().clear();
+            serverConfig.getServerHash().clear();
             while(iterator.hasNext()) {
                 String ip = iterator.next();
                 addServer0(ip);
@@ -142,8 +144,6 @@ public class ServerConfig {
     }
 
     private static void addServer0(String ip) {
-        serverConfig.getServerIpHashsMap().clear();
-        serverConfig.getServerHash().clear();
         for(int i = 0; i < VIRTUAL_NODE_NUM - 1; i++) {
             String nodeName = String.format(GlobalConstants.HASH_FORMAT, ip, String.valueOf(i));
             int hash = HashUtil.getHash(nodeName);
