@@ -41,7 +41,7 @@ public class HashMonitorListener extends JedisPubSub {
                 // 处理添加服务器信息
                 String ip = data.substring(GlobalConstants.REDIS_SERVER_ADD_SERVER_PREFIX.length());
                 if(!ip.equals(host)) {
-                    serverConfig.addServer(ip);
+                    serverConfig.refreshServer();
                 }
                 System.out.println(serverConfig.getServerIpHashsMap());
             } else if(data.startsWith(GlobalConstants.REDIS_SERVER_PING_PREFIX)) {
