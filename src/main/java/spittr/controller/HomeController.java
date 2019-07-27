@@ -77,4 +77,9 @@ public class HomeController {
             }
         }
     }
+
+    @RequestMapping(value = "/hashinfo", method = RequestMethod.GET)
+    public String hashinfo() {
+        return ServerConfig.getInstance().getServerIpHashsMap().toString();
+    }
 }
