@@ -22,14 +22,18 @@ public class CostumerHashService implements Runnable {
 
     @Override
     public void run() {
-        System.out.println(Thread.currentThread().getId() + " hash: " + hashNum + " thread started.");
-        Jedis jedis = jedisPool.getResource();
-        while(true) {
-            String data = jedis.brpoplpush(GlobalConstants.REDIS_LIST_DATA_PREFIX + hashNum, GlobalConstants.REDIS_LIST_2_DATA_PREFIX + hashNum, GlobalConstants.REDIS_TIMEOUT);
-            System.out.println("<Costumer> hash: " + hashNum + " process data: " + data);
-            if(data == null) continue;
-            processData(data);
-            jedis.lrem(GlobalConstants.REDIS_LIST_2_DATA_PREFIX + hashNum, 1, data);
+        try {
+            System.out.println(Thread.currentThread().getId() + " hash: " + hashNum + " thread started.");
+            Jedis jedis = jedisPool.getResource();
+            while(true) {
+                String data = jedis.brpoplpush(GlobalConstants.REDIS_LIST_DATA_PREFIX + hashNum, GlobalConstants.REDIS_LIST_2_DATA_PREFIX + hashNum, GlobalConstants.REDIS_TIMEOUT);
+                System.out.println("<Costumer> hash: " + hashNum + " process data: " + data);
+                if(data == null) continue;
+                processData(data);
+                jedis.lrem(GlobalConstants.REDIS_LIST_2_DATA_PREFIX + hashNum, 1, data);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

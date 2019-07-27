@@ -127,6 +127,7 @@ public class ServerConfig {
             Set<String> servers = jedis.smembers(GlobalConstants.REDIS_SERVER_SET);
             // 不包含当前服务器，需要发送add_server消息给各服务器
             if(!servers.contains(hostAddress)) {
+//                jedis.sadd(GlobalConstants.REDIS_SERVER_SET, hostAddress);
                 servers.add(hostAddress);
                 jedis.set(GlobalConstants.REDIS_SERVER_ADD_SERVER_PREFIX + hostAddress, "a", "nx", "ex", 5);
             }
@@ -142,7 +143,7 @@ public class ServerConfig {
     }
 
     private static void addServer0(String ip) {
-        for(int i = 0; i < VIRTUAL_NODE_NUM; i++) {
+        for(int i = 0; i < VIRTUAL_NODE_NUM - 1; i++) {
             String nodeName = String.format(GlobalConstants.HASH_FORMAT, ip, String.valueOf(i));
             int hash = HashUtil.getHash(nodeName);
             List<Integer> integerList = serverConfig.getServerIpHashsMap().get(ip);
